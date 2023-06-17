@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f755d59b-0d3c-4928-ba58-1a0b4bb80bbe"
+      }
+    },
+    "owner": "tiburciohugo"
   }
 }

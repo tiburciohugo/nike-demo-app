@@ -1,20 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+
+import ProductScreen from "./src/screens/ProductScreen";
+import ProductDetailsScreen from "./src/screens/ProductDetailsScreen";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+    <SafeAreaView style={styles.container}>
+      {/* <Text style={styles.title}>Products</Text> */}
+      {/* <ProductScreen /> */}
+      <ProductDetailsScreen />
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#faf7fd",
+    // alignItems: "center",
+    // justifyContent: "center",
+    // paddingHorizontal: 20,
+    // paddingVertical: 30,
   },
+  title: { fontSize: 34, fontWeight: "bold", textAlign: "center", marginTop: 40 },
 });
