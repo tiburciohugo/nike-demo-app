@@ -6,7 +6,7 @@ import {
   FlatList,
   useWindowDimensions,
   ScrollView,
-  Pressable,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import products from "../data/products";
@@ -18,7 +18,7 @@ export default function ProductDetailsScreen() {
 
   const addToCart = () => {
     console.warn("Add to cart");
-  }
+  };
 
   return (
     <View>
@@ -50,12 +50,12 @@ export default function ProductDetailsScreen() {
       </ScrollView>
 
       {/* Add to cart button */}
-      <Pressable
+      <TouchableOpacity
         onPress={addToCart}
         style={styles.button}
-        >
+      >
         <Text style={styles.buttontext}>Add to cart</Text>
-        </Pressable>
+      </TouchableOpacity>
 
       {/* Navigation icon */}
     </View>
@@ -74,10 +74,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     lineHeight: 30,
     fontWeight: "300",
+    paddingBottom: 70,
   },
   button: {
     position: "absolute",
-    bottom: 30,
+    bottom: 20,
     backgroundColor: "black",
     width: "90%",
     alignSelf: "center",
