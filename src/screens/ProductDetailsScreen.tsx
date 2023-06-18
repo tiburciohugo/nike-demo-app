@@ -34,6 +34,7 @@ export default function ProductDetailsScreen() {
           )}
           horizontal
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           pagingEnabled
         />
 

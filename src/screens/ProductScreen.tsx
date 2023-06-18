@@ -1,21 +1,37 @@
-import { View, Text, FlatList, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
 import products from "../data/products";
+import { ProductScreenNavigationProp } from "../../types/types";
 
-export default function ProductScreen() {
+type Props = {
+  navigation: ProductScreenNavigationProp;
+};
+
+export default function ProductScreen({ navigation }: Props) {
   return (
     <FlatList
       data={products}
       renderItem={({ item }) => (
-        <View style={styles.itemContainer}>
+        <TouchableOpacity
+          style={styles.itemContainer}
+          onPress={() => navigation.navigate("Product Details")}
+        >
           <Image
             source={{ uri: item.image }}
             style={styles.image}
           />
           <Text style={styles.name}>{item.name}</Text>
-        </View>
+        </TouchableOpacity>
       )}
       numColumns={2}
+      showsVerticalScrollIndicator={false}
     />
   );
 }
