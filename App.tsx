@@ -4,13 +4,17 @@ import ProductScreen from "./src/screens/ProductScreen";
 import ProductDetailsScreen from "./src/screens/ProductDetailsScreen";
 import ShoppingCart from "./src/screens/ShoppingCart";
 import Navigation from "./src/Navigation";
+import { Provider } from "react-redux";
+import store from "./src/store";
 
 export default function App() {
   return (
+    <Provider store={store}>
     <SafeAreaView style={styles.container}>
       <Navigation />
       <StatusBar style="auto" />
     </SafeAreaView>
+    </Provider>
   );
 }
 

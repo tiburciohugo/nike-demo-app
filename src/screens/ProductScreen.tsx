@@ -7,21 +7,30 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React from "react";
-import products from "../data/products";
 import { ProductScreenNavigationProp } from "../../types/types";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
+import { useDispatch } from "react-redux";
+import { productsSlice } from "../store/productsSlice";
 
 type Props = {
   navigation: ProductScreenNavigationProp;
 };
 
 export default function ProductScreen({ navigation }: Props) {
+  const dispatch = useDispatch();
+  const { products } = useSelector((state: RootState) => state.products);
+
   return (
     <FlatList
       data={products}
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.itemContainer}
-          onPress={() => navigation.navigate("Product Details")}
+          onPress={() => {
+            dispatch(productsSlice.actions.setSelectedProduct(item.id));
+            navigation.navigate("Product Details")
+          }}
         >
           <Image
             source={{ uri: item.image }}
