@@ -1,12 +1,4 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RouteProp } from "@react-navigation/native";
-
-// export interface RootStackParamList {
-//   Home: undefined;
-//   "Product Screen": undefined;
-//   "Product Details": undefined;
-//   "Shopping Cart": undefined;
-// }
 
 export type RootStackParamList = {
   "Product Details": undefined;
@@ -18,3 +10,9 @@ export type ProductScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "Product Screen"
 >;
+
+export type CartItem = {
+  product: { id: string; image: string; name: string; price: number };
+  size: number;
+  quantity: number;
+};

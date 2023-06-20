@@ -11,12 +11,12 @@ type Product = {
   description: string;
 };
 
-type State = {
+type ProductsState = {
   products: Product[];
   selectedProduct: Product | null;
 };
 
-const initialState: State = {
+const initialState: ProductsState = {
   products: products,
   selectedProduct: null,
 };

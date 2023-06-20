@@ -2,33 +2,52 @@ import {
   View,
   Text,
   FlatList,
-  StyleSheet,
-  Touchable,
+  StyleSheet,  
   TouchableOpacity,
 } from "react-native";
 import React from "react";
 import CartListItem from "../components/CartListItem";
-import cart from "../data/cart";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 
-const ShoppingCartTotals = () => (
-  <View style={styles.totalsContainer}>
-    <View style={styles.row}>
-      <Text>Subtotal</Text>
-      <Text style={{ fontSize: 16, color: "#a0a0a0" }}>410,00 USD</Text>
-    </View>
 
-    <View style={styles.row}>
-      <Text>Delivery</Text>
-      <Text style={{ fontSize: 16, color: "#a0a0a0" }}>10,00 USD</Text>
-    </View>
+const ShoppingCartTotals = () => {
+  const deliveryFee = useSelector((state: RootState) => state.cart.deliveryFee);
+  const subtotal = useSelector((state: RootState) =>
+    state.cart.items.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    )
+  );
+  const total = subtotal + deliveryFee;
 
-    <View style={styles.row}>
-      <Text style={styles.textBold}>Delivery</Text>
-      <Text style={styles.textBold}>420,00 USD</Text>
+  return (
+    <View style={styles.totalsContainer}>
+      <View style={styles.row}>
+        <Text>Subtotal</Text>
+        <Text style={{ fontSize: 16, color: "#a0a0a0" }}>
+          {subtotal === 0 ? 0.0 : subtotal.toFixed(2)} USD
+        </Text>
+      </View>
+
+      <View style={styles.row}>
+        <Text>Delivery</Text>
+        <Text style={{ fontSize: 16, color: "#a0a0a0" }}>
+          {subtotal === 0 ? 0.0 : deliveryFee.toFixed(2)} USD
+        </Text>
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.textBold}>Total</Text>
+        <Text style={styles.textBold}>
+          {subtotal === 0 ? 0.0 : total.toFixed(2)} USD
+        </Text>
+      </View>
     </View>
-  </View>
-);
+  );
+}
 export default function ShoppingCart() {
+  const cart = useSelector((state: RootState) => state.cart.items);
   return (
     <>
       <FlatList

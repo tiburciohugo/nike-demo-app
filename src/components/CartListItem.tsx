@@ -1,19 +1,53 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { cartSlice } from "../store/cartSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 
-const CartListItem = ({ cartItem }) => {
-  const [quantity, setQuantity] = useState(cartItem.quantity);
+type CartListItemProps = {
+  cartItem: {
+    product: { id: string; image: string; name: string; price: number };
+    size: number;
+    quantity: number;
+  };
+};
+
+const CartListItem = ({ cartItem }: CartListItemProps) => {
+  const dispatch = useDispatch();
+  const cart = useSelector((state: RootState) => state.cart.items);
+
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
 
   const increaseQuantity = () => {
-    setQuantity(quantity + 1);
+    dispatch(
+      cartSlice.actions.changeQuantity({
+        id: cartItem.product.id,
+        quantity: cartItem.quantity + 1,
+      })
+    );
   };
 
   const decreaseQuantity = () => {
-    if (quantity > 0) {
-      setQuantity(quantity - 1);
+    if (cartItem.quantity > 1) {
+      dispatch(
+        cartSlice.actions.changeQuantity({
+          id: cartItem.product.id,
+          quantity: cartItem.quantity - 1,
+        })
+      );
+    } else {
+      dispatch(cartSlice.actions.removeFromCart({ id: cartItem.product.id }));
     }
   };
+
+  if(totalItems === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ fontSize: 18 }}>No items in cart</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -33,7 +67,7 @@ const CartListItem = ({ cartItem }) => {
               color="gray"
             />
           </TouchableOpacity>
-          <Text style={styles.quantity}>{quantity}</Text>
+          <Text style={styles.quantity}>{cartItem.quantity}</Text>
           <TouchableOpacity onPress={increaseQuantity}>
             <AntDesign
               name="pluscircleo"
@@ -41,7 +75,9 @@ const CartListItem = ({ cartItem }) => {
               color="gray"
             />
           </TouchableOpacity>
-          <Text style={styles.itemTotal}>{`$ ${320.0 * quantity}`}</Text>
+          <Text style={styles.itemTotal}>{`$ ${
+            cartItem.product.price * cartItem.quantity
+          }`}</Text>
         </View>
       </View>
     </View>

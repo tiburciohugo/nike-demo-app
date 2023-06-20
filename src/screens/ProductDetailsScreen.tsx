@@ -8,21 +8,29 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
-import products from "../data/products";
-import { useSelector } from "react-redux";
+import React, {useCallback} from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store";
+import { cartSlice } from "../store/cartSlice";
+
 
 export default function ProductDetailsScreen() {
   const product = useSelector(
     (state: RootState) => state.products.selectedProduct
   );
+  const dispatch = useDispatch();
 
   const { width } = useWindowDimensions();
 
-  const addToCart = () => {
-    console.warn("Add to cart");
-  };
+  const addToCart = useCallback(() => {
+    if (product && product.sizes && product.sizes.length > 0) {
+      dispatch(
+        cartSlice.actions.addCartItem({ product, size: product.sizes[0] })
+      );
+    } else {
+      console.error("Product or product sizes not available");
+    }
+  }, [dispatch, product]);
 
   if (!product) {
     return null;
