@@ -16,3 +16,16 @@ export type CartItem = {
   size: number;
   quantity: number;
 };
+
+export type ViewableItem<T> = {
+  item: T;
+  key: string;
+  index: number;
+  isViewable: boolean;
+  section?: any;
+};
+
+export type ViewToken<T> = {
+  viewableItems: Array<ViewableItem<T>>;
+  changed: Array<ViewableItem<T>>;
+};

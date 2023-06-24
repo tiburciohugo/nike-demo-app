@@ -8,14 +8,20 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  ViewabilityConfig,
+  ViewToken,
+  Animated,
 } from "react-native";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { cartSlice } from "../store/cartSlice";
 import { useGetProductQuery } from "../store/apiSlice";
 import { RootStackParamList } from "@/types/types";
 import { RouteProp } from "@react-navigation/native";
 
+type ViewableItem<T> = ViewToken & {
+  item: T;
+};
 export default function ProductDetailsScreen({
   route,
 }: {
@@ -26,6 +32,7 @@ export default function ProductDetailsScreen({
   const product = data?.data;
   const dispatch = useDispatch();
   const { width } = useWindowDimensions();
+  const scrollX = React.useRef(new Animated.Value(0)).current;
 
   const addToCart = useCallback(() => {
     if (product && product.sizes && product.sizes.length > 0) {
@@ -37,6 +44,31 @@ export default function ProductDetailsScreen({
     }
   }, [dispatch, product]);
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // const updateIndex = ({
+  //   viewableItems,
+  // }: {
+  //   viewableItems: Array<ViewableItem<string>>;
+  //   changed: Array<ViewableItem<string>>;
+  // }) => {
+  //   setActiveIndex(viewableItems[0].index || 0);
+  // };
+  const updateIndex = React.useCallback(
+    ({
+      viewableItems,
+    }: {
+      viewableItems: Array<ViewableItem<string>>;
+      changed: Array<ViewableItem<string>>;
+    }) => {
+      setActiveIndex(viewableItems[0].index || 0);
+    },
+    [] // Add any dependencies here. If there are none, you can leave this as an empty array.
+  );
+
+  const viewConfigRef = React.useRef<ViewabilityConfig>({
+    viewAreaCoveragePercentThreshold: 50,
+  });
   if (isLoading) {
     return <ActivityIndicator />;
   }
@@ -55,6 +87,7 @@ export default function ProductDetailsScreen({
         {/* Image Carousel */}
         <FlatList
           data={product.images}
+          keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
             <Image
               source={{ uri: item }}
@@ -65,7 +98,35 @@ export default function ProductDetailsScreen({
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           pagingEnabled
+          onViewableItemsChanged={updateIndex}
+          viewabilityConfig={viewConfigRef.current}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
         />
+
+        <View style={styles.pagination}>
+          {product.images.map((_: string, i: number) => {
+            const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
+            const dotWidth = scrollX.interpolate({
+              inputRange,
+              outputRange: [10, 20, 10],
+              extrapolate: "clamp",
+            });
+            return (
+              <Animated.View
+                key={i}
+                style={[
+                  styles.dot,
+                  { width: dotWidth },
+                  i === activeIndex ? styles.activeDot : styles.inactiveDot,
+                ]}
+              />
+            );
+          })}
+        </View>
 
         <View style={{ padding: 20 }}>
           {/* Title */}
@@ -120,5 +181,29 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "500",
+  },
+  pagination: {
+    flexDirection: "row",
+    position: "absolute",
+    top: 360,
+    alignSelf: "center",
+    zIndex: 1,
+    borderRadius: 5,
+    padding: 5,
+  },
+  dot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    marginHorizontal: 2,
+  },
+  activeDot: {
+    backgroundColor: "#374A67",
+    height: 10,
+    width: 20, // Increase this value to make the dot wider
+    borderRadius: 5,
+  },
+  inactiveDot: {
+    backgroundColor: "#9DA3A4",
   },
 });
