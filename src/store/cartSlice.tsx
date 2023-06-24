@@ -5,6 +5,7 @@ type CartState = {
   items: CartItem[];
   deliveryFee: number;
   freeDeliveryMinimum: number;
+  subtotal: number;
 };
 
 type NewProductPayload = { product: CartItem["product"]; size: number };
@@ -15,6 +16,7 @@ const initialState: CartState = {
   items: [],
   deliveryFee: 15,
   freeDeliveryMinimum: 200,
+  subtotal: 0,
 };
 
 export const cartSlice = createSlice({
@@ -24,26 +26,32 @@ export const cartSlice = createSlice({
     addCartItem: (state, action: PayloadAction<NewProductPayload>) => {
       const newProduct = action.payload.product;
       const index = state.items.findIndex(
-        (item) => item.product.id === newProduct.id
+        (item) => item.product._id === newProduct._id
       );
       if (index >= 0) {
         state.items[index].quantity += 1;
-        return;
+      } else {
+        state.items.push({
+          product: newProduct,
+          quantity: 1,
+          size: action.payload.size,
+        });
       }
-      state.items.push({
-        product: newProduct,
-        quantity: 1,
-        size: action.payload.size,
-      });
+
+      // After adding item, update subtotal
+      state.subtotal = state.items.reduce(
+        (sum, item) => sum + item.product.price * item.quantity,
+        0
+      );
     },
     removeFromCart: (state, action: PayloadAction<ItemPayload>) => {
       state.items = state.items.filter(
-        (item) => item.product.id !== action.payload.id
+        (item) => item.product._id !== action.payload.id
       );
     },
     changeQuantity: (state, action: PayloadAction<QuantityPayload>) => {
       const index = state.items.findIndex(
-        (item) => item.product.id === action.payload.id
+        (item) => item.product._id === action.payload.id
       );
       if (index >= 0) {
         state.items[index].quantity = action.payload.quantity;

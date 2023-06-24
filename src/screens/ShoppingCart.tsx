@@ -9,43 +9,68 @@ import React from "react";
 import CartListItem from "../components/CartListItem";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
+import { useCreateOrderMutation } from "../store/apiSlice";
 
 const ShoppingCartTotals = () => {
+  const freeDeliveryThreshold = useSelector(
+    (state: RootState) => state.cart.freeDeliveryMinimum
+  );
   const deliveryFee = useSelector((state: RootState) => state.cart.deliveryFee);
   const subtotal = useSelector((state: RootState) =>
-    state.cart.items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
-      0
-    )
+    state.cart.subtotal.toFixed(2)
   );
-  const total = subtotal + deliveryFee;
+  const total =
+    Number(subtotal) >= freeDeliveryThreshold
+      ? subtotal
+      : subtotal + deliveryFee;
 
   return (
     <View style={styles.totalsContainer}>
       <View style={styles.row}>
         <Text>Subtotal</Text>
-        <Text style={{ fontSize: 16, color: "#a0a0a0" }}>
-          {subtotal === 0 ? 0.0 : subtotal.toFixed(2)} USD
-        </Text>
+        <Text style={{ fontSize: 16, color: "#a0a0a0" }}>{subtotal} USD</Text>
       </View>
 
       <View style={styles.row}>
         <Text>Delivery</Text>
         <Text style={{ fontSize: 16, color: "#a0a0a0" }}>
-          {subtotal === 0 ? 0.0 : deliveryFee.toFixed(2)} USD
+          {Number(subtotal) >= freeDeliveryThreshold ? 0.0 : deliveryFee} USD
         </Text>
       </View>
 
       <View style={styles.row}>
         <Text style={styles.textBold}>Total</Text>
-        <Text style={styles.textBold}>
-          {subtotal === 0 ? 0.0 : total.toFixed(2)} USD
-        </Text>
+        <Text style={styles.textBold}>{total} USD</Text>
       </View>
     </View>
   );
 };
+
 export default function ShoppingCart() {
+  const [createOrder, { data, error, isLoading }] = useCreateOrderMutation();
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const subtotal = useSelector((state: RootState) => state.cart.subtotal);
+  const deliveryFee = useSelector((state: RootState) => state.cart.deliveryFee);
+  const freeDeliveryThreshold = useSelector(
+    (state: RootState) => state.cart.freeDeliveryMinimum
+  );
+  let finalDeliveryFee = subtotal >= freeDeliveryThreshold ? 0 : deliveryFee;
+  let finalTotal = subtotal + finalDeliveryFee;
+
+  const onCreateOrder = () => {
+    createOrder({
+      items: cartItems,
+      subtotal,
+      deliveryFee: finalDeliveryFee,
+      total: finalTotal,
+      costumer: {
+        name: "John Doe",
+        address: "123 Main St",
+        email: "jonhdoe@gmail.com",
+      },
+    });
+    console.log("Order created");
+  };
   const cart = useSelector((state: RootState) => state.cart.items);
   return (
     <>
@@ -64,7 +89,7 @@ export default function ShoppingCart() {
           borderRadius: 10,
           alignItems: "center",
         }}
-        onPress={() => {}}
+        onPress={onCreateOrder}
       >
         <Text style={{ color: "#fff", fontSize: 18 }}>Checkout</Text>
       </TouchableOpacity>

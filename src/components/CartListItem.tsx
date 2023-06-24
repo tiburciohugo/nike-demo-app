@@ -7,7 +7,7 @@ import { RootState } from "../store";
 
 type CartListItemProps = {
   cartItem: {
-    product: { id: string; image: string; name: string; price: number };
+    product: { _id: string; image: string; name: string; price: number };
     size: number;
     quantity: number;
   };
@@ -22,7 +22,7 @@ const CartListItem = ({ cartItem }: CartListItemProps) => {
   const increaseQuantity = () => {
     dispatch(
       cartSlice.actions.changeQuantity({
-        id: cartItem.product.id,
+        id: cartItem.product._id,
         quantity: cartItem.quantity + 1,
       })
     );
@@ -32,12 +32,12 @@ const CartListItem = ({ cartItem }: CartListItemProps) => {
     if (cartItem.quantity > 1) {
       dispatch(
         cartSlice.actions.changeQuantity({
-          id: cartItem.product.id,
+          id: cartItem.product._id,
           quantity: cartItem.quantity - 1,
         })
       );
     } else {
-      dispatch(cartSlice.actions.removeFromCart({ id: cartItem.product.id }));
+      dispatch(cartSlice.actions.removeFromCart({ id: cartItem.product._id }));
     }
   };
 
