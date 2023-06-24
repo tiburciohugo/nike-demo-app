@@ -4,12 +4,16 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import React from "react";
 import CartListItem from "../components/CartListItem";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { useCreateOrderMutation } from "../store/apiSlice";
+import { useDispatch } from "react-redux";
+import { cartSlice } from "../store/cartSlice";
 
 const ShoppingCartTotals = () => {
   const freeDeliveryThreshold = useSelector(
@@ -47,22 +51,19 @@ const ShoppingCartTotals = () => {
 };
 
 export default function ShoppingCart() {
+  const dispatch = useDispatch();
   const [createOrder, { data, error, isLoading }] = useCreateOrderMutation();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const subtotal = useSelector((state: RootState) => state.cart.subtotal);
   const deliveryFee = useSelector((state: RootState) => state.cart.deliveryFee);
-  const freeDeliveryThreshold = useSelector(
-    (state: RootState) => state.cart.freeDeliveryMinimum
-  );
-  let finalDeliveryFee = subtotal >= freeDeliveryThreshold ? 0 : deliveryFee;
-  let finalTotal = subtotal + finalDeliveryFee;
+  const total = useSelector((state: RootState) => state.cart.total);
 
-  const onCreateOrder = () => {
-    createOrder({
+  const onCreateOrder = async () => {
+    const result = await createOrder({
       items: cartItems,
       subtotal,
-      deliveryFee: finalDeliveryFee,
-      total: finalTotal,
+      deliveryFee,
+      total,
       costumer: {
         name: "John Doe",
         address: "123 Main St",
@@ -70,6 +71,14 @@ export default function ShoppingCart() {
       },
     });
     console.log("Order created");
+
+    if ("data" in result && result.data?.status === "OK") {
+      Alert.alert(
+        "Your order has been submitted",
+        `the order reference: ${result.data?.data.ref}`
+      );
+      dispatch(cartSlice.actions.clearCart());
+    }
   };
   const cart = useSelector((state: RootState) => state.cart.items);
   return (
@@ -91,7 +100,10 @@ export default function ShoppingCart() {
         }}
         onPress={onCreateOrder}
       >
-        <Text style={{ color: "#fff", fontSize: 18 }}>Checkout</Text>
+        <Text style={{ color: "#fff", fontSize: 18 }}>
+          Checkout
+          {isLoading && <ActivityIndicator />}
+        </Text>
       </TouchableOpacity>
     </>
   );

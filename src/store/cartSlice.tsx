@@ -6,6 +6,7 @@ type CartState = {
   deliveryFee: number;
   freeDeliveryMinimum: number;
   subtotal: number;
+  total: number;
 };
 
 type NewProductPayload = { product: CartItem["product"]; size: number };
@@ -17,6 +18,7 @@ const initialState: CartState = {
   deliveryFee: 15,
   freeDeliveryMinimum: 200,
   subtotal: 0,
+  total: 0,
 };
 
 export const cartSlice = createSlice({
@@ -38,11 +40,14 @@ export const cartSlice = createSlice({
         });
       }
 
-      // After adding item, update subtotal
       state.subtotal = state.items.reduce(
         (sum, item) => sum + item.product.price * item.quantity,
         0
       );
+
+      state.deliveryFee =
+        state.subtotal >= state.freeDeliveryMinimum ? 0 : state.deliveryFee;
+      state.total = state.subtotal + state.deliveryFee;
     },
     removeFromCart: (state, action: PayloadAction<ItemPayload>) => {
       state.items = state.items.filter(
@@ -56,6 +61,12 @@ export const cartSlice = createSlice({
       if (index >= 0) {
         state.items[index].quantity = action.payload.quantity;
       }
+    },
+    clearCart: (state) => {
+      state.items = [];
+      state.subtotal = 0;
+      state.total = 0;
+      state.deliveryFee = 0;
     },
   },
 });
