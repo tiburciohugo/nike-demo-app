@@ -2,14 +2,13 @@ import {
   View,
   Text,
   FlatList,
-  StyleSheet,  
+  StyleSheet,
   TouchableOpacity,
 } from "react-native";
 import React from "react";
 import CartListItem from "../components/CartListItem";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-
 
 const ShoppingCartTotals = () => {
   const deliveryFee = useSelector((state: RootState) => state.cart.deliveryFee);
@@ -45,7 +44,7 @@ const ShoppingCartTotals = () => {
       </View>
     </View>
   );
-}
+};
 export default function ShoppingCart() {
   const cart = useSelector((state: RootState) => state.cart.items);
   return (

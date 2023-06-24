@@ -1,7 +1,7 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export type RootStackParamList = {
-  "Product Details": undefined;
+  "Product Details": { productId: string } ;
   "Shopping Cart": undefined;
   "Product Screen": undefined;
 };

@@ -7,19 +7,24 @@ import {
   useWindowDimensions,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React, {useCallback} from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../store";
+import React, { useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { cartSlice } from "../store/cartSlice";
+import { useGetProductQuery } from "../store/apiSlice";
+import { RootStackParamList } from "@/types/types";
+import { RouteProp } from "@react-navigation/native";
 
-
-export default function ProductDetailsScreen() {
-  const product = useSelector(
-    (state: RootState) => state.products.selectedProduct
-  );
+export default function ProductDetailsScreen({
+  route,
+}: {
+  route: RouteProp<RootStackParamList, "Product Details">;
+}) {
+  const { productId } = route.params;
+  const { data, error, isLoading } = useGetProductQuery(productId);
+  const product = data?.data;
   const dispatch = useDispatch();
-
   const { width } = useWindowDimensions();
 
   const addToCart = useCallback(() => {
@@ -32,8 +37,16 @@ export default function ProductDetailsScreen() {
     }
   }, [dispatch, product]);
 
-  if (!product) {
-    return null;
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return error ? (
+      <Text style={{ textAlign: "center", color: "red" }}>
+        Error fetching the product
+      </Text>
+    ) : null;
   }
 
   return (
