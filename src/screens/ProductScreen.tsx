@@ -9,11 +9,9 @@ import {
 } from "react-native";
 import React from "react";
 import { ProductScreenNavigationProp } from "../../types/types";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
 import { useDispatch } from "react-redux";
-import { productsSlice } from "../store/productsSlice";
 import { useGetProductsQuery } from "../store/apiSlice";
+import { MotiView } from "moti";
 
 type Props = {
   navigation: ProductScreenNavigationProp;
@@ -41,20 +39,26 @@ export default function ProductScreen({ navigation }: Props) {
   return (
     <FlatList
       data={products}
-      renderItem={({ item }) => (        
-        <TouchableOpacity
+      renderItem={({ item, index }) => (
+        <MotiView
           style={styles.itemContainer}
-          onPress={() => {
-            // dispatch(productsSlice.actions.setSelectedProduct(item.id));
-            navigation.navigate("Product Details", { productId: item._id });
-          }}
+          from={{ opacity: 0, translateY: 50 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ delay: 1000 + index * 200 }}
         >
-          <Image
-            source={{ uri: item.image }}
-            style={styles.image}
+          <TouchableOpacity
+            onPress={() => {
+              // dispatch(productsSlice.actions.setSelectedProduct(item.id));
+              navigation.navigate("Product Details", { productId: item._id });
+            }}
+          >
+            <Image
+              source={{ uri: item.image }}
+              style={styles.image}
             />
-          <Text style={styles.name}>{item.name}</Text>
-        </TouchableOpacity>
+            <Text style={styles.name}>{item.name}</Text>
+          </TouchableOpacity>
+        </MotiView>
       )}
       numColumns={2}
       showsVerticalScrollIndicator={false}
@@ -64,15 +68,16 @@ export default function ProductScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   itemContainer: {
+    padding: 10,
     width: "50%",
-    padding: 1,
   },
   title: { fontSize: 24, fontWeight: "bold", textAlign: "center" },
   name: { fontSize: 16, fontWeight: "500", textAlign: "center" },
   image: {
     width: "100%",
     aspectRatio: 1,
-    resizeMode: "contain",
+    resizeMode: "center",
     borderRadius: 10,
+    marginRight: 0,
   },
 });

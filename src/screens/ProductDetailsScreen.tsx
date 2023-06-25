@@ -46,14 +46,6 @@ export default function ProductDetailsScreen({
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // const updateIndex = ({
-  //   viewableItems,
-  // }: {
-  //   viewableItems: Array<ViewableItem<string>>;
-  //   changed: Array<ViewableItem<string>>;
-  // }) => {
-  //   setActiveIndex(viewableItems[0].index || 0);
-  // };
   const updateIndex = React.useCallback(
     ({
       viewableItems,
@@ -63,7 +55,7 @@ export default function ProductDetailsScreen({
     }) => {
       setActiveIndex(viewableItems[0].index || 0);
     },
-    [] // Add any dependencies here. If there are none, you can leave this as an empty array.
+    []
   );
 
   const viewConfigRef = React.useRef<ViewabilityConfig>({
@@ -84,7 +76,6 @@ export default function ProductDetailsScreen({
   return (
     <View>
       <ScrollView>
-        {/* Image Carousel */}
         <FlatList
           data={product.images}
           keyExtractor={(_, index) => index.toString()}
@@ -107,48 +98,44 @@ export default function ProductDetailsScreen({
           scrollEventThrottle={16}
         />
 
-        <View style={styles.pagination}>
-          {product.images.map((_: string, i: number) => {
-            const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
-            const dotWidth = scrollX.interpolate({
-              inputRange,
-              outputRange: [10, 20, 10],
-              extrapolate: "clamp",
-            });
-            return (
-              <Animated.View
-                key={i}
-                style={[
-                  styles.dot,
-                  { width: dotWidth },
-                  i === activeIndex ? styles.activeDot : styles.inactiveDot,
-                ]}
-              />
-            );
-          })}
-        </View>
+        {product.images.length > 1 && (
+          <View style={styles.pagination}>
+            {product.images.map((_: string, i: number) => {
+              const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
+              const dotWidth = scrollX.interpolate({
+                inputRange,
+                outputRange: [10, 20, 10],
+                extrapolate: "clamp",
+              });
+              return (
+                <Animated.View
+                  key={i}
+                  style={[
+                    styles.dot,
+                    { width: dotWidth },
+                    i === activeIndex ? styles.activeDot : styles.inactiveDot,
+                  ]}
+                />
+              );
+            })}
+          </View>
+        )}
 
         <View style={{ padding: 20 }}>
-          {/* Title */}
           <Text style={styles.title}>{product.name}</Text>
 
-          {/* Price */}
           <Text style={styles.price}>${product.price}</Text>
 
-          {/* Description */}
           <Text style={styles.description}>{product.description}</Text>
         </View>
       </ScrollView>
 
-      {/* Add to cart button */}
       <TouchableOpacity
         onPress={addToCart}
         style={styles.button}
       >
         <Text style={styles.buttontext}>Add to cart</Text>
       </TouchableOpacity>
-
-      {/* Navigation icon */}
     </View>
   );
 }

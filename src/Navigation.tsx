@@ -30,6 +30,7 @@ export default function Navigation() {
         <Stack.Screen
           name="Products"
           component={ProductScreen}
+          style={{ backgroundColor: "black" }}
           options={({ navigation }: Props) => ({
             headerTitleAlign: "center",
             headerRight: () => (

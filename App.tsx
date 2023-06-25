@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import Navigation from "./src/Navigation";
 import { Provider } from "react-redux";
 import store from "./src/store";
+import "react-native-reanimated";
+import "react-native-gesture-handler";
 
 export default function App() {
   return (
