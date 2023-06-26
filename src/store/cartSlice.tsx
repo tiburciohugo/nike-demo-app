@@ -40,19 +40,14 @@ export const cartSlice = createSlice({
         });
       }
 
-      state.subtotal = state.items.reduce(
-        (sum, item) => sum + item.product.price * item.quantity,
-        0
-      );
-
-      state.deliveryFee =
-        state.subtotal >= state.freeDeliveryMinimum ? 0 : state.deliveryFee;
-      state.total = state.subtotal + state.deliveryFee;
+      calculateTotals(state);
     },
     removeFromCart: (state, action: PayloadAction<ItemPayload>) => {
       state.items = state.items.filter(
         (item) => item.product._id !== action.payload.id
       );
+
+      calculateTotals(state);
     },
     changeQuantity: (state, action: PayloadAction<QuantityPayload>) => {
       const index = state.items.findIndex(
@@ -61,6 +56,8 @@ export const cartSlice = createSlice({
       if (index >= 0) {
         state.items[index].quantity = action.payload.quantity;
       }
+
+      calculateTotals(state);
     },
     clearCart: (state) => {
       state.items = [];
@@ -70,3 +67,19 @@ export const cartSlice = createSlice({
     },
   },
 });
+
+function calculateTotals(state: CartState) {
+  state.subtotal = state.items.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
+
+  state.deliveryFee =
+    state.items.length === 0
+      ? 0
+      : state.subtotal >= state.freeDeliveryMinimum
+      ? 0
+      : initialState.deliveryFee;
+
+  state.total = state.subtotal + state.deliveryFee;
+}

@@ -41,7 +41,7 @@ const CartListItem = ({ cartItem }: CartListItemProps) => {
     }
   };
 
-  if(totalItems === 0) {
+  if (cart.length === 0) {
     return (
       <View style={styles.container}>
         <Text style={{ fontSize: 18 }}>No items in cart</Text>

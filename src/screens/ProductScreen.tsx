@@ -19,7 +19,6 @@ type Props = {
 
 export default function ProductScreen({ navigation }: Props) {
   const dispatch = useDispatch();
-  // const { products } = useSelector((state: RootState) => state.products);
   const { data, error, isLoading } = useGetProductsQuery({});
 
   if (isLoading) {
@@ -48,7 +47,6 @@ export default function ProductScreen({ navigation }: Props) {
         >
           <TouchableOpacity
             onPress={() => {
-              // dispatch(productsSlice.actions.setSelectedProduct(item.id));
               navigation.navigate("Product Details", { productId: item._id });
             }}
           >

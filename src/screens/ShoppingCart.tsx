@@ -20,31 +20,28 @@ const ShoppingCartTotals = () => {
     (state: RootState) => state.cart.freeDeliveryMinimum
   );
   const deliveryFee = useSelector((state: RootState) => state.cart.deliveryFee);
-  const subtotal = useSelector((state: RootState) =>
-    state.cart.subtotal.toFixed(2)
-  );
-  const total =
-    Number(subtotal) >= freeDeliveryThreshold
-      ? subtotal
-      : subtotal + deliveryFee;
+  const subtotal = useSelector((state: RootState) => state.cart.subtotal);
+  const total = useSelector((state: RootState) => state.cart.total);
 
   return (
     <View style={styles.totalsContainer}>
       <View style={styles.row}>
         <Text>Subtotal</Text>
-        <Text style={{ fontSize: 16, color: "#a0a0a0" }}>{subtotal} USD</Text>
+        <Text style={{ fontSize: 16, color: "#a0a0a0" }}>
+          {subtotal.toFixed(2)} USD
+        </Text>
       </View>
 
       <View style={styles.row}>
         <Text>Delivery</Text>
         <Text style={{ fontSize: 16, color: "#a0a0a0" }}>
-          {Number(subtotal) >= freeDeliveryThreshold ? 0.0 : deliveryFee} USD
+          {subtotal >= freeDeliveryThreshold ? 0.0 : deliveryFee.toFixed(2)} USD
         </Text>
       </View>
 
       <View style={styles.row}>
         <Text style={styles.textBold}>Total</Text>
-        <Text style={styles.textBold}>{total} USD</Text>
+        <Text style={styles.textBold}>{total.toFixed(2)} USD</Text>
       </View>
     </View>
   );
@@ -79,12 +76,12 @@ export default function ShoppingCart() {
       );
       dispatch(cartSlice.actions.clearCart());
     }
-  };
-  const cart = useSelector((state: RootState) => state.cart.items);
+  };  
+
   return (
     <>
       <FlatList
-        data={cart}
+        data={cartItems}
         renderItem={({ item }) => <CartListItem cartItem={item} />}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={ShoppingCartTotals}
