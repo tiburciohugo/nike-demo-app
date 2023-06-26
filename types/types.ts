@@ -4,6 +4,7 @@ export type RootStackParamList = {
   "Product Details": { productId: string } ;
   "Shopping Cart": undefined;
   "Product Screen": undefined;
+  "Track Order": undefined;
 };
 
 export type ProductScreenNavigationProp = NativeStackNavigationProp<

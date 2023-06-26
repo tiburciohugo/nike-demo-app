@@ -9,6 +9,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { ProductScreenNavigationProp } from "@/types/types";
 import { useSelector } from "react-redux";
 import { RootState } from "./store";
+import TrackOrderScreen from "./screens/TrackOrderScreen";
 
 type Props = {
   navigation: ProductScreenNavigationProp;
@@ -30,7 +31,6 @@ export default function Navigation() {
         <Stack.Screen
           name="Products"
           component={ProductScreen}
-          style={{ backgroundColor: "black" }}
           options={({ navigation }: Props) => ({
             headerTitleAlign: "center",
             headerRight: () => (
@@ -61,6 +61,18 @@ export default function Navigation() {
                 >
                   {totalItems}
                 </Text>
+              </TouchableOpacity>
+            ),
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Track Order")}
+                style={{ flexDirection: "row" }}
+              >
+                <FontAwesome5
+                  name="truck"
+                  size={18}
+                  color={"gray"}
+                />
               </TouchableOpacity>
             ),
           })}
@@ -106,6 +118,11 @@ export default function Navigation() {
         <Stack.Screen
           name="Shopping Cart"
           component={ShoppingCart}
+        />
+        <Stack.Screen
+          name="Track Order"
+          component={TrackOrderScreen}
+          options={{ headerTitleAlign: "center" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
