@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { ProductScreenNavigationProp } from "../../types/types";
 import { useDispatch } from "react-redux";
 import { useGetProductsQuery } from "../store/apiSlice";
@@ -20,6 +20,8 @@ type Props = {
 export default function ProductScreen({ navigation }: Props) {
   const dispatch = useDispatch();
   const { data, error, isLoading } = useGetProductsQuery({});
+  const [displayedCount, setDisplayedCount] = useState(6);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   if (isLoading) {
     return <ActivityIndicator />;
@@ -37,7 +39,7 @@ export default function ProductScreen({ navigation }: Props) {
 
   return (
     <FlatList
-      data={products}
+      data={products.slice(0, displayedCount)}
       renderItem={({ item, index }) => (
         <MotiView
           style={styles.itemContainer}
@@ -60,6 +62,24 @@ export default function ProductScreen({ navigation }: Props) {
       )}
       numColumns={2}
       showsVerticalScrollIndicator={false}
+      onEndReached={() => {
+        if (displayedCount < products.length) {
+          setLoadingMore(true);
+          setTimeout(() => {
+            setDisplayedCount((oldCount) => oldCount + 6);
+            setLoadingMore(false);
+          }, 2000);
+        }
+      }}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={() => {
+        return loadingMore ? (
+          <ActivityIndicator
+            size="large"
+            color="black"
+          />
+        ) : null;
+      }}
     />
   );
 }
